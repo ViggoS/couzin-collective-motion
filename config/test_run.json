@@ -1,0 +1,11 @@
+{
+  "output_csv": "test_run.csv",
+  "num_runs": 10,
+  "N_values": [10, 30],
+  "p_values": [0.0, 0.15, 0.25, 0.5, 1.0],
+  "n1_values": [0],
+  "n2_values": [0],
+  "angle1_deg_values": [0],
+  "angle2_deg_values": [90],
+  "run_time": 2000
+}

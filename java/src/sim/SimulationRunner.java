@@ -13,7 +13,7 @@ public class SimulationRunner {
 
         try {
             // Läs JSON
-            String jsonString = new String(Files.readAllBytes(Paths.get("config_experiment_1.json")));
+            String jsonString = new String(Files.readAllBytes(Paths.get("config/test_run.json")));
             JSONObject config = new JSONObject(jsonString);
 
             String outputCsv = config.getString("output_csv");
