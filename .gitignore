@@ -1,0 +1,20 @@
+# Java
+out/
+build/
+*.class
+
+# Processing
+application.*
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+
+# Data (rådata om stora)
+# data/raw/
+
+# OS / IDE
+.DS_Store
+.vscode/
+.idea/
