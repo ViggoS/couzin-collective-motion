@@ -13,23 +13,28 @@ public class Agent {
     public int informed;   // 0 = naive, 1/2 = informed types
     public Vec2 g;         // preference vector (unit vector), zero for naive
 
-    public double speed = 2.0;
-    public double maxTurn = 0.25;   // maximum angle per step (radians)
+    public double speed = 1.0;
+    public double maxTurn = 0.3;   // maximum angle per step (radians)
     // feedback weights not used currently
-    public double weight_inc = 0.0;
-    public double weight_dec = 0.0;
+    public double weight_inc = 0.008;
+    public double weight_dec = 0.0006;
+    public boolean useFeedback;
 
     // Zone radii
-    public double R_rep = 1.5*12;   // zone of repulsion
-    public double R_ori = 2.5*72;   // zone of orientation + attraction
-    public double w = 0.3;     // weight for preference vector
-    public double noise = 0.0; // angular noise standard deviation
+    public double R_rep = 2*12;   // zone of repulsion
+    public double R_ori = 2.5*92;   // zone of orientation + attraction
+    public double w = 0.35;     // weight for preference vector (was 0.20 before))
+    public double w_max = 0.45; // maximum weight for preference vector
+ 
+    //public double noise = 0.0; // angular noise standard deviation
+
 
     public Agent(
         double x, 
         double y, 
         int informed, 
-        Vec2 g) 
+        Vec2 g,
+        boolean useFeedback) 
         
         {
         this.pos = new Vec2(x, y);
@@ -40,6 +45,11 @@ public class Agent {
             this.g = g.copy().normalize();
         } else {
             this.g = new Vec2(0, 0); // no preference
+        }
+
+        this.useFeedback = useFeedback;
+        if (useFeedback) {
+            w = 0.10; // lower initial weight
         }
     }
 
@@ -61,20 +71,21 @@ public class Agent {
         int socialCount = 0;
 
         for (Agent o : others) {
-            if (o == this) continue;
             double d = periodicDist(this.pos, o.pos, width, height);
 
-            if (d < R_rep) {
+            if (o != this && d < R_rep) {
                 // vector away from neighbor (periodic)
                 Vec2 away = periodicVector(this.pos, o.pos, width, height).mult(-1).normalize();
                 repulsion.add(away);
                 hasRepulsion = true;
             } else if (d < R_ori) {
-                // attraction: unit vector toward neighbor
-                Vec2 toNbr = periodicVector(this.pos, o.pos, width, height).copy().normalize();
-                attraction.add(toNbr);
+                // attraction: unit vector toward neighbor (skip self)
+                if (o != this) {
+                    Vec2 toNbr = periodicVector(this.pos, o.pos, width, height).copy().normalize();
+                    attraction.add(toNbr);
+                }
 
-                // orientation: add neighbor heading (unit)
+                // orientation: add neighbor heading (unit) - includes self
                 Vec2 oDir = o.vel.copy().normalize();
                 orientation.add(oDir);
 
@@ -100,7 +111,24 @@ public class Agent {
 
         // 4. ADD PREFERENCE (informed individuals only)
         if (this.informed != 0) {
-            Vec2 pref = this.g.copy().mult(this.w);
+
+            Vec2 pref = this.g.copy();
+
+            // use feedback to adjust weight
+            if (useFeedback) {
+                double angleBetween = angleBetweenVectors(this.vel, pref);
+                // compute alignment with group direction and increase/decrease weight w if
+                // aligned/misaligned (threshold is 10 degrees )
+                if (Math.abs(angleBetween) < 0.17 && w < w_max ) {           // 10 degrees = 0.17 rad
+                    this.w += weight_inc;
+                } else if(w > 0.0) { // only decrease if above zero
+                    this.w -= weight_dec;
+                }
+
+            }
+            
+            pref.mult(this.w); // weight preference vector multiplied by w
+
             desired.add(pref);
             desired.normalize();
         }
@@ -115,15 +143,16 @@ public class Agent {
         }
 
         // 6. ADD ANGULAR NOISE
-        double noiseAngle = rng.nextGaussian() * noise;
-        this.vel.rotate(noiseAngle);
+        //double noiseAngle = rng.nextGaussian() * noise;
+        //this.vel.rotate(noiseAngle);
 
         this.vel.normalize();
         this.vel.mult(speed);
 
         // 7. UPDATE POSITION + WRAP
         this.pos.add(this.vel);
-        wrap(width, height);
+        wrap(width, height); 
+    
     }
 
     // ---------------- helper math & geometry ----------------

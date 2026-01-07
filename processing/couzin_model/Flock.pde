@@ -15,6 +15,14 @@ class Flock {
     }
   }
 
+  // print weights w of all agents (for debugging)
+  void printWeights() {
+    for (Agent a : agents) {
+      
+      println(a.informed + " " + a.getW());
+    }
+  }
+
 
   PVector calculateGroupCentroid() {
     float sumCosX = 0;

@@ -1,8 +1,8 @@
 Flock flock;
 
 // Parameters
-int N = 100;              // total number of agents
-int n1 = 20;              // number of informed agents with preference g1
+int N = 50;              // total number of agents
+int n1 = 10;              // number of informed agents with preference g1
 int n2 = 0;              // number of informed agents with preference g2
 
 PVector g1, g2;           // preference vectors
@@ -10,7 +10,7 @@ float angle1 = 0;         // 0°
 float angle2 = radians(90); // e.g. 60° difference
 
 boolean displayInfo = true;
-int runTime = 2000; // iterations to run
+int runTime = 1000; // iterations to run
 int iterations = 0;
 
 int initialBoxSize = 50; // size of initial spawning box
@@ -25,7 +25,6 @@ boolean displayBoundingBox = false;
 
 void setup() {
   size(1400, 1000);
-  //frameRate(100);
   flock = new Flock();
 
   // define preference vectors
@@ -57,7 +56,7 @@ void setup() {
 void draw() {
   if (iterations >= runTime) {
     noLoop();
-  } else if (frameCount == runTime - 100) {
+  } else if (frameCount == runTime - 250) {
     // store first centroid
     centroid1 = flock.calculateGroupCentroid();
     iterations++;
@@ -71,6 +70,8 @@ void draw() {
     displayBoundingBox = true;
     elongationRatio = boundingBox.x / boundingBox.y;
     iterations++;
+    // print weights for debugging
+    flock.printWeights();
   } else{
     iterations++;
   }
@@ -123,10 +124,12 @@ void displayInfo() {
     strokeWeight(4);
     line(0, 0, groupDirection.x * 100, groupDirection.y * 100);
     // arrowhead
-    strokeWeight(4);
+    strokeWeight(6);
     line(groupDirection.x * 100, groupDirection.y * 100, groupDirection.x * 90 - groupDirection.y * 10, groupDirection.y * 90 + groupDirection.x * 10);
     line(groupDirection.x * 100, groupDirection.y * 100, groupDirection.x * 90 + groupDirection.y * 10, groupDirection.y * 90 - groupDirection.x * 10);
     fill(242, 140, 40);
+    // make text size larger
+    textSize(16);
     text("Group Direction", groupDirection.x * 50 + 50, groupDirection.y * 50 + 5);
     popMatrix();
   }

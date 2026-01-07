@@ -37,11 +37,13 @@ public class CouzinModel {
     private Agent.Vec2 groupDirection;
     private double[] boundingBox; 
 
-    private int timeToMeasure = 100;
+    private int timeToMeasure = 250;
+    private boolean useFeedback = false;
+
 
     private final Random rng = new Random(); // for noise and randomness
 
-    public CouzinModel(int N, int n1, int n2, double angle1, double angle2, int runTime, Random rng) {
+    public CouzinModel(int N, int n1, int n2, double angle1, double angle2, int runTime, Random rng, boolean useFeedback) {
         
 
         this.N = N;
@@ -52,6 +54,8 @@ public class CouzinModel {
 
         this.g1 = Agent.Vec2.fromAngle(angle1).normalize();
         this.g2 = Agent.Vec2.fromAngle(angle2).normalize();
+        this.useFeedback = useFeedback;
+        
     }
 
     /** Runs one full simulation and returns the resulting group direction */
@@ -77,7 +81,7 @@ public class CouzinModel {
             double y = randInRange(height / 2 - initialBoxSize / 2,
                                    height / 2 + initialBoxSize / 2);
 
-            Agent a = new Agent(x, y, informed, g);
+            Agent a = new Agent(x, y, informed, g, useFeedback);
             flock.add(a);
         }
 

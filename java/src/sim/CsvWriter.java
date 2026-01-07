@@ -1,5 +1,6 @@
 package sim;
 
+import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -8,15 +9,22 @@ public class CsvWriter {
 
     private PrintWriter writer;
     private boolean headerWritten = false;
+    private final Object lock = new Object();
 
     public CsvWriter(String filename) throws IOException {
-        writer = new PrintWriter(new FileWriter(filename, true)); // append mode
+        File file = new File(filename);
+        boolean append = file.exists() && file.length() > 0;
+        headerWritten = append; // skip header if file already populated
+        writer = new PrintWriter(new FileWriter(file, true));
     }
 
     public void writeHeader(String... headers) {
-        if (!headerWritten) {
-            writer.println(String.join(",", headers));
-            headerWritten = true;
+        synchronized (lock) {
+            if (!headerWritten) {
+                writer.println(String.join(",", headers));
+                headerWritten = true;
+                writer.flush();
+            }
         }
     }
 
@@ -26,7 +34,10 @@ public class CsvWriter {
             sb.append(values[i].toString());
             if (i < values.length - 1) sb.append(",");
         }
-        writer.println(sb.toString());
+        synchronized (lock) {
+            writer.println(sb.toString());
+            writer.flush();
+        }
     }
 
     public void close() {

@@ -1,0 +1,12 @@
+{
+  "output_csv": "direx_Ab.csv",
+  "num_runs": 200,
+  "N_values": [100],
+  "p_values": [0],
+  "n1_values": [33],
+  "n2_values": [27],
+  "angle1_deg_values": [0],
+  "angle2_deg_values": [0,10,20,30,40,50,60,70,80,90,100,110,120,130,140,150,160,170,180],
+  "run_time": 2000,
+  "use_feedback": false
+}

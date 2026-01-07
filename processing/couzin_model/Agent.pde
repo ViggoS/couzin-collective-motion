@@ -5,15 +5,16 @@ class Agent {
   PVector g;         // preference vector (unit vector)
   
   float speed = 2.0;
-  float maxTurn = 0.25;   // maximum angle per step (radians)
+  float maxTurn = 0.4;   // maximum angle per step (radians)
   // No feedback weights at this stage
-  float weight_inc = 0.0; // 0.012; // weight increment for informed agents
-  float weight_dec = 0.0; //0.0008; // weight decrement for uninformed agents
+  float weight_inc = 0.0; //0.008; // weight increment for informed agents # 0.012
+  float weight_dec = 0.0;//0.0006; // weight decrement for uninformed agents
+  float w_max = 0.45; // maximum weight for preference vector
 
   // Zone radii
-  float R_rep = 1.5*12;   // zone of repulsion (alpha in Couzin 2005)
-  float R_ori = 2.5*92;   // zone of orientation + attraction (ro in Couzin 2005)
-  float w = 0.30;      // weight for preference vector (omega in Couzin 2005) 0.12 is good for cohesion
+  float R_rep = 2*12;   // zone of repulsion (alpha in Couzin 2005) (*1.5)
+  float R_ori = 2.5*92;   // zone of orientation + attraction (ro in Couzin 2005) (*2.5)
+  float w = 0.25;      // weight for preference vector (omega in Couzin 2005) 0.12 is good for cohesion
   float noise = 0.0;  // noise standard deviation
   color col;
   color blue = color(58, 110, 165);
@@ -82,6 +83,23 @@ class Agent {
         attraction.add(toNbr);
 
         // orientation: align with neighbor's heading
+        //PVector oDir = o.vel.copy().normalize();
+        //orientation.add(oDir);
+
+        socialCount++;
+      }
+    }
+
+    for (Agent o : others) {
+   
+      // include self in orientation zone
+      float d = periodicDist(pos, o.pos);
+
+      // ---------------------------
+      // ORIENTATION + ATTRACTION
+      // ---------------------------
+      if (d < R_ori) {
+
         PVector oDir = o.vel.copy().normalize();
         orientation.add(oDir);
 
@@ -124,6 +142,15 @@ class Agent {
     // 4. ADD PREFERENCE (informed individuals only)
     // -------------------------------------------------------
     if (informed != 0) {
+      
+      // update weight w based on feedback mechanism (increase if moving toward goal, decrease otherwise, 20 degrees threshold)
+      if (angleBetweenVectors(vel, g) < radians(10) && w < w_max) {
+        w += weight_inc;
+      } else if(w > 0){ 
+        w -= weight_dec;
+      }
+      w = constrain(w, 0, w_max);
+
       // Combine desired direction with preference vector g
       // A small w ensures the flock stays coherent.
       PVector pref = PVector.mult(g, w);
@@ -180,6 +207,14 @@ class Agent {
     endShape(CLOSE);
 
     popMatrix();
+  }
+
+  double getW() {
+    if(informed != 0) {
+      return w;
+    } else {
+      return 0;
+    }
   }
 
   // -------------------------------------------------------
