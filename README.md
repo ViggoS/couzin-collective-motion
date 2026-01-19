@@ -2,6 +2,8 @@
 
 Course Project – Simulation of Complex Systems (FFR120), Chalmers University of Technology
 
+![](https://github.com/ViggoS/couzin-collective-motion/blob/main/simulation_1type.gif)
+
 ### Overview
 
 This repository contains the project work developed as part of the course Simulation of Complex Systems (FFR120) at Chalmers University of Technology. The aim of the project was to study and simulate collective motion as a complex system, inspired by the seminal work of Couzin et al. (2005) on self-organized animal group behavior.
