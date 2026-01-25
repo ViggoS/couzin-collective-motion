@@ -55,12 +55,13 @@ Through this project, the following aspects of complex systems were explored:
 
 - Agent-based modeling and visualization
 
+
+Click Run to start the simulation.
+
+Simulation parameters (such as number of agents, interaction radius, and noise levels) can be adjusted directly in the source code to explore different dynamics.
+
 ### References
 
 Couzin, I. D., Krause, J., Franks, N. R., & Levin, S. A. (2005).
 Effective leadership and decision-making in animal groups.
 Nature, 433(7025), 513–516.
-
-Click Run to start the simulation.
-
-Simulation parameters (such as number of agents, interaction radius, and noise levels) can be adjusted directly in the source code to explore different dynamics.
